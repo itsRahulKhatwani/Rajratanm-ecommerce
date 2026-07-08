@@ -1,26 +1,141 @@
 @import "tailwindcss";
+@config "../tailwind.config.ts";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ========================================
+   RAJ RATANM — BRAND DESIGN SYSTEM
+   ======================================== */
+
+@theme {
+  --color-navy: #0D1B2A;
+  --color-navy-light: #1B2D45;
+  --color-navy-dark: #060F18;
+  --color-gold: #C9A84C;
+  --color-gold-light: #D4B96A;
+  --color-gold-dark: #A88B3A;
+  --color-ivory: #F5F0E8;
+  --color-ivory-dark: #E8E0D0;
+  --color-rose: #C97D7D;
+  --color-rose-light: #D4999A;
+  --color-emerald: #2E6B5E;
+  --color-emerald-light: #3D8A79;
+
+  --font-playfair: "Playfair Display", serif;
+  --font-inter: "Inter", sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* ========================================
+   BASE STYLES
+   ======================================== */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Universal reset handled by Tailwind preflight */
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter);
+  background-color: var(--color-navy);
+  color: var(--color-ivory);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-playfair);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+
+@keyframes gold-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(201, 168, 76, 0.1); }
+  50% { box-shadow: 0 0 40px rgba(201, 168, 76, 0.3); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes border-glow {
+  0%, 100% { border-color: rgba(201, 168, 76, 0.3); }
+  50% { border-color: rgba(201, 168, 76, 0.8); }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+.animate-gold-glow { animation: gold-glow 3s ease-in-out infinite; }
+.animate-fade-in { animation: fade-in 0.6s ease-out forwards; }
+.animate-shimmer { animation: shimmer 2s linear infinite; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-border-glow { animation: border-glow 3s ease-in-out infinite; }
+
+.gold-gradient {
+  background: linear-gradient(135deg, var(--color-gold-dark), var(--color-gold), var(--color-gold-light));
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, var(--color-gold-dark), var(--color-gold), var(--color-gold-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(201, 168, 76, 0.15);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-navy-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-gold-dark);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold);
+}
+
+/* Rich text content styling */
+.prose-brand {
+  color: var(--color-ivory);
+}
+.prose-brand h1, .prose-brand h2, .prose-brand h3 {
+  color: var(--color-gold);
+  font-family: var(--font-playfair);
+}
+.prose-brand a {
+  color: var(--color-gold);
+}
+.prose-brand p {
+  line-height: 1.8;
+  margin-bottom: 1rem;
 }
