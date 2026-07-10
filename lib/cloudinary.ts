@@ -7,26 +7,40 @@ cloudinary.config({
   secure: true,
 });
 
-export default cloudinary;
-
 /**
  * Upload an image to Cloudinary (signed upload — server-side only).
- * Returns the secure URL of the uploaded image.
+ * @param file - base64 data URI or a remote URL string
+ * @param folder - Cloudinary folder path (defaults to rajratanm/products)
+ * @returns The secure_url of the uploaded image
  */
-export async function uploadImage(
-  file: string, // base64 data URI or URL
-  folder: string = "rajratanm"
+export async function uploadToCloudinary(
+  file: string,
+  folder: string = "rajratanm/products"
 ): Promise<string> {
-  const result = await cloudinary.uploader.upload(file, {
-    folder,
-    transformation: [{ quality: "auto", fetch_format: "auto" }],
-  });
-  return result.secure_url;
+  try {
+    const result = await cloudinary.uploader.upload(file, {
+      folder,
+      transformation: [{ quality: "auto", fetch_format: "auto" }],
+    });
+    return result.secure_url;
+  } catch (err) {
+    throw new Error(
+      `Cloudinary upload failed: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
 }
 
 /**
- * Delete an image from Cloudinary by its public ID.
+ * Delete an image from Cloudinary by its public_id.
+ * Used when admin deletes a product or replaces its image.
+ * @param publicId - The Cloudinary public_id of the image to delete
  */
-export async function deleteImage(publicId: string): Promise<void> {
-  await cloudinary.uploader.destroy(publicId);
+export async function deleteFromCloudinary(publicId: string): Promise<void> {
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (err) {
+    throw new Error(
+      `Cloudinary delete failed: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
 }

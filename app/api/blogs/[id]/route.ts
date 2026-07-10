@@ -1,48 +1,121 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
+import { createServerClient } from "@/lib/supabase";
 
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+type RouteContext = { params: Promise<{ id: string }> };
+
+// GET /api/blogs/[id] — looks up by SLUG
+// Public can only see published=true blogs.
+// Drafts return 404 for unauthenticated callers (don't reveal drafts exist).
+export async function GET(request: Request, { params }: RouteContext) {
   try {
-    const resolvedParams = await params;
-    const blog = await prisma.blog.findUnique({ where: { id: resolvedParams.id } });
-    if (!blog) return NextResponse.json({ error: "Blog not found" }, { status: 404 });
-    return NextResponse.json(blog);
+    const { id: slug } = await params;
+    const blog = await prisma.blog.findUnique({ where: { slug } });
+
+    if (!blog) {
+      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    }
+
+    if (!blog.published) {
+      // Check if the caller is an authenticated admin
+      const supabase = createServerClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        // Return 404 — don't reveal the draft exists
+        return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+      }
+    }
+
+    return NextResponse.json({ blog });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch blog" }, { status: 500 });
+    console.error("[BLOG_GET] Error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
-export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+// PUT /api/blogs/[id] — Protected, partial update by slug
+export async function PUT(request: Request, { params }: RouteContext) {
   try {
-    const resolvedParams = await params;
-    const body = await request.json();
+    const supabase = createServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id: slug } = await params;
+
+    const existing = await prisma.blog.findUnique({ where: { slug } });
+    if (!existing) {
+      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    }
+
+    const body: Partial<{
+      title: string;
+      titleHindi: string;
+      slug: string;
+      content: string;
+      contentHindi: string;
+      excerpt: string;
+      excerptHindi: string;
+      coverImage: string;
+      published: boolean;
+    }> = await request.json();
+
+    // If publishing for the first time, stamp publishedAt
+    const publishedAt =
+      body.published === true && !existing.publishedAt
+        ? new Date()
+        : existing.publishedAt;
+
     const blog = await prisma.blog.update({
-      where: { id: resolvedParams.id },
+      where: { slug },
       data: {
-        title: body.title,
-        titleHindi: body.titleHindi,
-        slug: body.slug,
-        content: body.content,
-        contentHindi: body.contentHindi,
-        excerpt: body.excerpt,
-        excerptHindi: body.excerptHindi,
-        coverImage: body.coverImage,
-        published: body.published ?? false,
-        publishedAt: body.published ? new Date() : null,
+        ...(body.title !== undefined ? { title: body.title } : {}),
+        ...(body.titleHindi !== undefined ? { titleHindi: body.titleHindi } : {}),
+        ...(body.slug !== undefined ? { slug: body.slug } : {}),
+        ...(body.content !== undefined ? { content: body.content } : {}),
+        ...(body.contentHindi !== undefined ? { contentHindi: body.contentHindi } : {}),
+        ...(body.excerpt !== undefined ? { excerpt: body.excerpt } : {}),
+        ...(body.excerptHindi !== undefined ? { excerptHindi: body.excerptHindi } : {}),
+        ...(body.coverImage !== undefined ? { coverImage: body.coverImage } : {}),
+        ...(body.published !== undefined ? { published: body.published } : {}),
+        publishedAt,
       },
     });
-    return NextResponse.json(blog);
+
+    return NextResponse.json({ blog });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to update blog" }, { status: 500 });
+    console.error("[BLOG_PUT] Error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+// DELETE /api/blogs/[id] — Protected
+export async function DELETE(_request: Request, { params }: RouteContext) {
   try {
-    const resolvedParams = await params;
-    await prisma.blog.delete({ where: { id: resolvedParams.id } });
-    return NextResponse.json({ success: true });
+    const supabase = createServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id: slug } = await params;
+
+    const existing = await prisma.blog.findUnique({ where: { slug } });
+    if (!existing) {
+      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    }
+
+    await prisma.blog.delete({ where: { slug } });
+    return NextResponse.json({ message: "Blog deleted successfully" });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to delete blog" }, { status: 500 });
+    console.error("[BLOG_DELETE] Error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
