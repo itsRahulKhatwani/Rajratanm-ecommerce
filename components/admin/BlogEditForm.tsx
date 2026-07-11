@@ -2,36 +2,25 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { XCircle, Loader2 } from 'lucide-react';
+import { Blog } from '@prisma/client';
+import { XCircle, Loader2, Clock } from 'lucide-react';
 import RichTextEditor from '@/components/ui/RichTextEditor';
 import ImageUploader from '@/components/ui/ImageUploader';
 
-export default function NewBlogPage() {
+export default function BlogEditForm({ blog }: { blog: Blog }) {
   const router = useRouter();
-  const [title, setTitle] = useState('');
-  const [titleHindi, setTitleHindi] = useState('');
-  const [slug, setSlug] = useState('');
-  const [excerpt, setExcerpt] = useState('');
-  const [excerptHindi, setExcerptHindi] = useState('');
-  const [content, setContent] = useState('');
-  const [contentHindi, setContentHindi] = useState('');
-  const [coverImage, setCoverImage] = useState('');
-  const [published, setPublished] = useState(false);
+  const [title, setTitle] = useState(blog.title || '');
+  const [titleHindi, setTitleHindi] = useState(blog.titleHindi || '');
+  const [slug, setSlug] = useState(blog.slug || '');
+  const [excerpt, setExcerpt] = useState(blog.excerpt || '');
+  const [excerptHindi, setExcerptHindi] = useState(blog.excerptHindi || '');
+  const [content, setContent] = useState(blog.content || '');
+  const [contentHindi, setContentHindi] = useState(blog.contentHindi || '');
+  const [coverImage, setCoverImage] = useState(blog.coverImage || '');
+  const [published, setPublished] = useState(blog.published ?? false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (title) {
-      const generatedSlug = title.toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim();
-      setSlug(generatedSlug);
-    } else {
-      setSlug('');
-    }
-  }, [title]);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,19 +46,22 @@ export default function NewBlogPage() {
     };
 
     try {
-      const res = await fetch('/api/blogs', {
-        method: 'POST',
+      const res = await fetch(`/api/blogs/${blog.slug}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || 'Failed to save blog');
+        throw new Error(data.error || 'Failed to update blog');
       }
 
-      router.push('/admin/blogs');
-      router.refresh();
+      setSuccess(true);
+      setTimeout(() => {
+        router.push('/admin/blogs');
+        router.refresh();
+      }, 500);
     } catch (err: any) {
       setError(err.message || 'Something went wrong');
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -77,9 +69,19 @@ export default function NewBlogPage() {
     }
   };
 
+  const updatedAt = new Intl.DateTimeFormat('en-IN', { 
+    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+  }).format(new Date(blog.updatedAt));
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <h1 className="text-2xl font-semibold text-[#F5F0E8]">Write New Blog Post</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h1 className="text-2xl font-semibold text-[#F5F0E8]">Edit Blog Post</h1>
+        <div className="flex items-center text-sm text-gray-400 bg-[#0D2137] border border-[#C9A84C]/20 px-3 py-1.5 rounded-full">
+          <Clock className="w-4 h-4 mr-2" />
+          Last updated: {updatedAt}
+        </div>
+      </div>
       
       {error && (
         <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 flex items-start space-x-3 text-red-400">
@@ -88,8 +90,13 @@ export default function NewBlogPage() {
         </div>
       )}
 
+      {success && (
+        <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 text-green-400 font-medium">
+          Blog updated successfully! Redirecting...
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-8">
-        {/* LEFT COLUMN (2/3 width) */}
         <div className="lg:w-2/3 space-y-8">
           <div className="bg-[#0D2137] rounded-lg p-6 border border-[#C9A84C]/20 space-y-6">
             <h2 className="text-lg font-medium text-[#C9A84C] border-b border-[#C9A84C]/20 pb-2">
@@ -178,7 +185,6 @@ export default function NewBlogPage() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN (1/3 width) */}
         <div className="lg:w-1/3">
           <div className="sticky top-6 space-y-8">
             <div className="bg-[#0D2137] rounded-lg p-6 border border-[#C9A84C]/20 space-y-6">
@@ -194,7 +200,7 @@ export default function NewBlogPage() {
                   onChange={(e) => setSlug(e.target.value)}
                   className="w-full bg-[#1A2E44] border border-[#C9A84C]/30 rounded p-2.5 text-[#F5F0E8] focus:outline-none focus:border-[#C9A84C]"
                 />
-                <p className="text-xs text-gray-400 mt-1">Preview: rajratanm.com/blog/{slug || '[slug]'}</p>
+                <p className="text-xs text-yellow-500/80 mt-1">Warning: Changing the slug will break existing links to this post.</p>
               </div>
 
               <div className="space-y-3 pt-4 border-t border-[#C9A84C]/20">
@@ -208,9 +214,11 @@ export default function NewBlogPage() {
                   </div>
                   <span className={`font-medium ${published ? 'text-[#C9A84C]' : 'text-gray-500'}`}>Publish Now</span>
                 </div>
-                {published && (
-                  <p className="text-xs text-green-400 bg-green-500/10 p-2 rounded">
-                    This post will be visible to all visitors immediately.
+                {published && blog.publishedAt && (
+                  <p className="text-xs text-gray-400 mt-2 text-right">
+                    Published on: {new Intl.DateTimeFormat('en-IN', {
+                      day: '2-digit', month: 'short', year: 'numeric'
+                    }).format(new Date(blog.publishedAt))}
                   </p>
                 )}
               </div>
@@ -252,10 +260,10 @@ export default function NewBlogPage() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                  Saving...
+                  Updating...
                 </>
               ) : (
-                published ? 'Publish Post' : 'Save Draft'
+                'Update Post'
               )}
             </button>
           </div>

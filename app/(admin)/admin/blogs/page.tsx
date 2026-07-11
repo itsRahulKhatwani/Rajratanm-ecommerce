@@ -1,37 +1,60 @@
-import Link from "next/link";
+import React from 'react';
+import Link from 'next/link';
+import { PenLine, BookOpen } from 'lucide-react';
+import { prisma } from '@/lib/prisma';
+import BlogsTable from '@/components/admin/BlogsTable';
 
-export default function AdminBlogsPage() {
+export default async function BlogsPage() {
+  const blogs = await prisma.blog.findMany({
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      published: true,
+      publishedAt: true,
+      coverImage: true,
+      createdAt: true,
+      titleHindi: true,
+      content: true,
+      contentHindi: true,
+      excerpt: true,
+      excerptHindi: true,
+      updatedAt: true
+    }
+  });
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="font-playfair text-3xl font-bold text-gold">Blogs</h1>
-        <Link
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <h1 className="text-2xl font-semibold text-[#F5F0E8]">Blog Posts</h1>
+        <Link 
           href="/admin/blogs/new"
-          className="px-6 py-3 rounded-xl bg-gold text-navy font-semibold text-sm hover:bg-gold-light transition-colors"
+          className="flex items-center space-x-2 bg-[#C9A84C] text-[#0D2137] px-4 py-2 rounded-lg font-medium hover:bg-[#D4B86A] transition-colors"
         >
-          + Write Blog
+          <PenLine className="w-5 h-5" />
+          <span>Write New Blog</span>
         </Link>
       </div>
 
-      <div className="rounded-2xl border border-gold/10 bg-navy-light/50 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-gold/10">
-              <th className="px-6 py-4 text-left text-ivory/50 font-medium">Title</th>
-              <th className="px-6 py-4 text-left text-ivory/50 font-medium">Status</th>
-              <th className="px-6 py-4 text-left text-ivory/50 font-medium">Date</th>
-              <th className="px-6 py-4 text-right text-ivory/50 font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colSpan={4} className="px-6 py-16 text-center text-ivory/30">
-                No blog posts yet. Click &quot;Write Blog&quot; to share your first story.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      {blogs.length > 0 ? (
+        <BlogsTable blogs={blogs as any} />
+      ) : (
+        <div className="flex flex-col items-center justify-center p-12 text-center bg-[#0D2137] border border-[#C9A84C]/20 rounded-lg">
+          <div className="w-16 h-16 rounded-full bg-[#C9A84C]/10 flex items-center justify-center mb-4">
+            <BookOpen className="w-8 h-8 text-[#C9A84C]" />
+          </div>
+          <h2 className="text-xl font-medium text-[#F5F0E8] mb-2">No blog posts yet</h2>
+          <p className="text-gray-400 mb-6">Share your gemstone knowledge with the world</p>
+          <Link 
+            href="/admin/blogs/new"
+            className="flex items-center space-x-2 bg-[#C9A84C] text-[#0D2137] px-4 py-2 rounded-lg font-medium hover:bg-[#D4B86A] transition-colors"
+          >
+            <PenLine className="w-5 h-5" />
+            <span>Write First Post</span>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

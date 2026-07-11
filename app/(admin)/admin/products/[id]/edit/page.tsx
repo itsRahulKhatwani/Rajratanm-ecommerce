@@ -1,13 +1,16 @@
-export default function EditProductPage() {
-  return (
-    <div>
-      <h1 className="font-playfair text-3xl font-bold text-gold mb-8">Edit Product</h1>
-      <div className="text-center py-16 rounded-2xl border border-gold/10 bg-navy-light/50">
-        <p className="text-ivory/40">
-          Product editing will be available once the database is connected.
-          <br />Connect Supabase and run Prisma migrations to enable this feature.
-        </p>
-      </div>
-    </div>
-  );
+import { notFound } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import ProductEditForm from '@/components/admin/ProductEditForm';
+
+export default async function EditProductPage({ params }: { params: { id: string } }) {
+  const slug = params.id;
+  const product = await prisma.product.findUnique({
+    where: { slug }
+  });
+
+  if (!product) {
+    notFound();
+  }
+
+  return <ProductEditForm product={product} />;
 }
