@@ -9,7 +9,7 @@ const MAX_BASE64_CHARS = 10 * 1024 * 1024 * (4 / 3);
 // POST /api/image-upload — Protected (admin only)
 export async function POST(request: Request) {
   try {
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
 // DELETE /api/image-upload — Protected (admin only)
 export async function DELETE(request: Request) {
   try {
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();

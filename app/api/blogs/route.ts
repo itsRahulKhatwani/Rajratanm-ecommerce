@@ -13,7 +13,7 @@ export async function GET(request: Request) {
 
     if (all) {
       // Admin usage — require auth
-      const supabase = createServerClient();
+      const supabase = await createServerClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
 // POST /api/blogs — Protected
 export async function POST(request: Request) {
   try {
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();

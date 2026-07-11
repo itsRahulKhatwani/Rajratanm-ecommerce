@@ -80,3 +80,12 @@ model Testimonial {
   rating    Int
   createdAt DateTime @default(now())
 }
+
+model Contact {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+}

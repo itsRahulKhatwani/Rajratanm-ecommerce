@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { createBrowserClient } from "@/lib/supabase";
+import { createBrowserClient } from "@/lib/supabase-client";
 import {
   LayoutDashboard,
   Gem,

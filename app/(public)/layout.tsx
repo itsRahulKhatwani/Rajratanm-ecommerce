@@ -1,6 +1,6 @@
 "use client";
 
-import { LanguageProvider } from "@/lib/LanguageContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 

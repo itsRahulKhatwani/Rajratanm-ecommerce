@@ -31,7 +31,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     // Auth check
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();

@@ -6,7 +6,7 @@ import { createServerClient } from "@/lib/supabase";
 // Supports ?status= filter
 export async function GET(request: Request) {
   try {
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();

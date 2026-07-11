@@ -18,7 +18,7 @@ export async function GET(request: Request, { params }: RouteContext) {
 
     if (!blog.published) {
       // Check if the caller is an authenticated admin
-      const supabase = createServerClient();
+      const supabase = await createServerClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -38,7 +38,7 @@ export async function GET(request: Request, { params }: RouteContext) {
 // PUT /api/blogs/[id] — Protected, partial update by slug
 export async function PUT(request: Request, { params }: RouteContext) {
   try {
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -97,7 +97,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
 // DELETE /api/blogs/[id] — Protected
 export async function DELETE(_request: Request, { params }: RouteContext) {
   try {
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();

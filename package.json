@@ -12,6 +12,7 @@
     "@prisma/client": "^6.19.3",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.110.1",
+    "@tailwindcss/typography": "^0.5.20",
     "cloudinary": "^2.10.0",
     "lucide-react": "^1.24.0",
     "next": "16.2.10",

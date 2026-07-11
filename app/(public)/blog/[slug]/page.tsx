@@ -1,23 +1,126 @@
-"use client";
+import { notFound } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import Image from 'next/image';
+import Link from 'next/link';
+import BlogCard from '@/components/ui/BlogCard';
+import BlogContentClient from '@/components/ui/BlogContentClient';
 
-import { useLanguage } from "@/lib/LanguageContext";
-import Link from "next/link";
+export const dynamic = "force-dynamic";
 
-export default function BlogDetailPage() {
-  const { t } = useLanguage();
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  let blog = null;
+  try {
+    blog = await prisma.blog.findFirst({
+      where: { slug: params.slug, published: true },
+      select: { title: true, excerpt: true, coverImage: true }
+    });
+  } catch (error) {
+    console.warn("Database connection failed for generateMetadata");
+  }
+  if (!blog) return {};
+  
+  return {
+    title: `${blog.title} | Raj Ratanm Blog`,
+    description: blog.excerpt,
+    openGraph: { images: [blog.coverImage || ''] }
+  };
+}
+
+export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+  let blog = null;
+  let relatedBlogs: any[] = [];
+
+  try {
+    blog = await prisma.blog.findFirst({
+      where: { slug: params.slug, published: true }
+    });
+    
+    if (blog) {
+      relatedBlogs = await prisma.blog.findMany({
+        where: { 
+          published: true,
+          slug: { not: blog.slug }
+        },
+        take: 3,
+        orderBy: { publishedAt: 'desc' },
+        select: {
+          id: true, title: true, titleHindi: true,
+          slug: true, excerpt: true, excerptHindi: true,
+          coverImage: true, publishedAt: true
+        }
+      });
+    }
+  } catch (error) {
+    console.warn("Database connection failed for BlogPostPage");
+  }
+
+  if (!blog) notFound();
+
+  const formattedDate = blog.publishedAt 
+    ? new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(blog.publishedAt))
+    : '';
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": blog.title,
+    "image": blog.coverImage,
+    "datePublished": blog.publishedAt,
+    "publisher": {
+      "@type": "Organization",
+      "name": "Raj Ratanm"
+    }
+  };
 
   return (
-    <div className="min-h-screen py-12 px-4">
-      <div className="max-w-3xl mx-auto text-center py-24">
-        <svg className="w-20 h-20 text-gold/20 mx-auto mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-        </svg>
-        <h1 className="font-playfair text-3xl text-gold mb-4">Post Not Found</h1>
-        <p className="text-ivory/50 mb-8">This blog post hasn&apos;t been published yet. Posts will appear here once the owner writes them through the admin dashboard.</p>
-        <Link href="/blog" className="text-gold hover:text-gold-light transition-colors">
-          ← Back to {t("blog.title")}
-        </Link>
+    <main className="py-12 px-4 max-w-3xl mx-auto">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      {/* Breadcrumb */}
+      <div className="text-sm text-[#F5F0E8]/50 mb-6">
+        <Link href="/blog" className="hover:text-[#C9A84C] transition-colors">Blog</Link>
+        <span className="mx-2">→</span>
+        <span className="text-[#C9A84C]">{blog.title}</span>
       </div>
-    </div>
+
+      {/* Cover Image */}
+      {blog.coverImage && (
+        <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden mb-8 border border-[#C9A84C]/20">
+          <Image
+            src={blog.coverImage}
+            alt={blog.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 800px"
+          />
+        </div>
+      )}
+
+      {formattedDate && (
+        <div className="text-[#F5F0E8]/50 text-sm font-medium tracking-widest uppercase mb-4">
+          {formattedDate}
+        </div>
+      )}
+
+      <BlogContentClient blog={blog} />
+
+      <div className="w-full h-px bg-[#C9A84C]/20 my-16" />
+
+      {relatedBlogs.length > 0 && (
+        <div className="pt-8">
+          <h2 className="font-playfair text-3xl font-bold text-[#F5F0E8] mb-8 text-center">
+            More from our Journal
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {relatedBlogs.map(rb => (
+              <BlogCard key={rb.id} blog={rb as any} />
+            ))}
+          </div>
+        </div>
+      )}
+    </main>
   );
 }

@@ -23,7 +23,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
 // PUT /api/products/[id] — Protected, partial update by slug
 export async function PUT(request: Request, { params }: RouteContext) {
   try {
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -86,7 +86,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
 // DELETE /api/products/[id] — Protected
 export async function DELETE(_request: Request, { params }: RouteContext) {
   try {
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();

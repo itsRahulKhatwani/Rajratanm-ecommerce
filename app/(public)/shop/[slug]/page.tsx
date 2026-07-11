@@ -1,24 +1,119 @@
-"use client";
+import { notFound } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import ProductImageGallery from '@/components/ui/ProductImageGallery';
+import ProductInfoClient from '@/components/ui/ProductInfoClient';
+import ProductCard from '@/components/ui/ProductCard';
 
-import { useLanguage } from "@/lib/LanguageContext";
-import Link from "next/link";
+export const dynamic = "force-dynamic";
 
-export default function ProductDetailPage() {
-  const { t } = useLanguage();
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  let product = null;
+  try {
+    product = await prisma.product.findUnique({
+      where: { slug: params.slug },
+      select: { name: true, description: true, imageUrls: true }
+    });
+  } catch (error) {
+    console.warn("Database connection failed for generateMetadata");
+  }
+  if (!product) return {};
+  
+  // Strip HTML tags for description
+  const plainDesc = product.description.replace(/<[^>]+>/g, '').slice(0, 160);
+  
+  return {
+    title: `${product.name} | Raj Ratanm`,
+    description: plainDesc,
+    openGraph: {
+      images: [product.imageUrls[0] || '']
+    }
+  };
+}
 
-  // Product will be fetched from DB once connected — for now show a not-found state
+export default async function ProductPage({ params }: { params: { slug: string } }) {
+  let product = null;
+  let relatedProducts: any[] = [];
+
+  try {
+    product = await prisma.product.findUnique({
+      where: { slug: params.slug }
+    });
+
+    if (product) {
+      relatedProducts = await prisma.product.findMany({
+        where: { 
+          category: product.category,
+          slug: { not: product.slug },
+          inStock: true
+        },
+        take: 4,
+        select: {
+          id: true, name: true, nameHindi: true, slug: true,
+          category: true, price: true, imageUrls: true
+        }
+      });
+    }
+  } catch (error) {
+    console.warn("Database connection failed for ProductPage");
+  }
+
+  if (!product) notFound();
+
+  const plainDesc = product.description.replace(/<[^>]+>/g, '');
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "description": plainDesc,
+    "image": product.imageUrls,
+    "offers": {
+      "@type": "Offer",
+      "price": product.price,
+      "priceCurrency": "INR",
+      "availability": product.inStock 
+        ? "https://schema.org/InStock" 
+        : "https://schema.org/OutOfStock"
+    }
+  };
+
   return (
-    <div className="min-h-screen py-12 px-4">
-      <div className="max-w-7xl mx-auto text-center py-24">
-        <svg className="w-20 h-20 text-gold/20 mx-auto mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-        </svg>
-        <h1 className="font-playfair text-3xl text-gold mb-4">Product Not Found</h1>
-        <p className="text-ivory/50 mb-8">This product hasn&apos;t been added yet. Products will appear here once the owner adds them through the admin dashboard.</p>
-        <Link href="/shop" className="text-gold hover:text-gold-light transition-colors">
-          ← {t("cart.continueShopping")}
-        </Link>
+    <main className="py-12 px-4 max-w-7xl mx-auto">
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
+        {/* LEFT COLUMN: Gallery */}
+        <div className="lg:w-1/2">
+          <div className="sticky top-24">
+            <ProductImageGallery imageUrls={product.imageUrls} productName={product.name} />
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Product Info */}
+        <div className="lg:w-1/2">
+          <ProductInfoClient product={product} />
+        </div>
       </div>
-    </div>
+
+      {/* RELATED PRODUCTS */}
+      {relatedProducts.length > 0 && (
+        <div className="mt-32 border-t border-[#C9A84C]/20 pt-16">
+          <h2 className="font-playfair text-3xl font-bold text-[#F5F0E8] mb-8 text-center">
+            You May Also Like
+          </h2>
+          <div className="flex overflow-x-auto gap-6 pb-8 snap-x lg:grid lg:grid-cols-4 lg:overflow-visible lg:pb-0">
+            {relatedProducts.map(p => (
+              <div key={p.id} className="min-w-[280px] snap-center">
+                <ProductCard product={p} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </main>
   );
 }
