@@ -10,21 +10,24 @@ export default function ProductsTable({ products }: { products: Product[] }) {
   const router = useRouter();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const handleDelete = async (slug: string) => {
     setIsDeleting(true);
+    setDeleteError(null);
     try {
       const res = await fetch(`/api/products/${slug}`, {
         method: 'DELETE',
       });
+      const data = await res.json();
       if (res.ok) {
         setDeleteId(null);
         router.refresh();
       } else {
-        console.error('Failed to delete product');
+        setDeleteError(data.error || 'Failed to delete product');
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      setDeleteError(err.message || 'Something went wrong');
     } finally {
       setIsDeleting(false);
     }
@@ -123,10 +126,16 @@ export default function ProductsTable({ products }: { products: Product[] }) {
               <h3 className="text-lg font-medium text-[#F5F0E8]">Delete Product</h3>
             </div>
             
-            <p className="text-gray-300 mb-6">
+            <p className="text-gray-300 mb-4">
               Are you sure you want to delete <span className="font-semibold text-white">{deleteProduct.name}</span>? 
               This action cannot be undone.
             </p>
+
+            {deleteError && (
+              <div className="mb-6 p-3 bg-red-500/10 border border-red-500/30 rounded text-sm text-red-400">
+                {deleteError}
+              </div>
+            )}
             
             <div className="flex justify-end space-x-3">
               <button

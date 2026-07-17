@@ -103,8 +103,11 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
     await prisma.product.delete({ where: { slug } });
     return NextResponse.json({ message: "Product deleted successfully" });
-  } catch (error) {
+  } catch (error: any) {
     console.error("[PRODUCT_DELETE] Error:", error);
+    if (error.code === 'P2003') {
+      return NextResponse.json({ error: "Cannot delete product because it's part of past customer orders. Please mark it 'Out of Stock' instead to preserve order history." }, { status: 400 });
+    }
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

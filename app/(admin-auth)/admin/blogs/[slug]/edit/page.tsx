@@ -4,9 +4,10 @@ import { notFound } from "next/navigation"
 
 export const dynamic = "force-dynamic"
 
-export default async function EditBlogPage({ params }: { params: { slug: string } }) {
+export default async function EditBlogPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
   const blog = await prisma.blog.findUnique({
-    where: { slug: params.slug }
+    where: { slug: resolvedParams.slug }
   })
 
   if (!blog) {
