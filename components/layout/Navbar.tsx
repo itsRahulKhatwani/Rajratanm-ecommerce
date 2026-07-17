@@ -99,15 +99,47 @@ export default function Navbar() {
             </Link>
 
             {/* Account / Sign In */}
-            <Link
-              href={user ? "/account" : "/login"}
-              className="p-2 text-[#F5F0E8]/70 hover:text-[#C9A84C] transition-colors duration-300"
-              aria-label="Account"
-            >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-              </svg>
-            </Link>
+            <div className="relative">
+              {user ? (
+                <Link
+                  href="/account"
+                  className="p-2 text-[#F5F0E8]/70 hover:text-[#C9A84C] transition-colors duration-300 inline-block"
+                  aria-label="Account"
+                >
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                </Link>
+              ) : (
+                <div className="relative group">
+                  <button
+                    className="p-2 text-[#F5F0E8]/70 hover:text-[#C9A84C] transition-colors duration-300 inline-block"
+                    aria-label="Account"
+                  >
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                  </button>
+                  
+                  <div className="absolute right-0 top-full pt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div className="bg-[#0D2137] border border-[#C9A84C]/20 rounded-lg shadow-xl py-2">
+                      <Link 
+                        href="/login" 
+                        className="block px-4 py-2 text-sm text-[#F5F0E8]/70 hover:text-[#C9A84C] hover:bg-[#C9A84C]/10 transition-colors"
+                      >
+                        Customer Login
+                      </Link>
+                      <Link 
+                        href="/admin/login" 
+                        className="block px-4 py-2 text-sm text-[#F5F0E8]/70 hover:text-[#C9A84C] hover:bg-[#C9A84C]/10 transition-colors"
+                      >
+                        Admin Portal
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Mobile menu button */}
             <button
