@@ -7,22 +7,22 @@ import { XCircle, Loader2, Clock } from 'lucide-react';
 import RichTextEditor from '@/components/ui/RichTextEditor';
 import ImageUploader from '@/components/ui/ImageUploader';
 
-export default function ProductEditForm({ product }: { product: Product }) {
+export default function ProductEditForm({ product, isNew = false }: { product?: Partial<Product>, isNew?: boolean }) {
   const router = useRouter();
-  const [name, setName] = useState(product.name || '');
-  const [nameHindi, setNameHindi] = useState(product.nameHindi || '');
-  const [slug, setSlug] = useState(product.slug || '');
-  const [category, setCategory] = useState(product.category || '');
-  const [price, setPrice] = useState(product.price ? product.price.toString() : '');
-  const [description, setDescription] = useState(product.description || '');
-  const [descriptionHindi, setDescriptionHindi] = useState(product.descriptionHindi || '');
-  const [origin, setOrigin] = useState(product.origin || '');
-  const [chakra, setChakra] = useState(product.chakra || '');
-  const [healingProps, setHealingProps] = useState(product.healingProps || '');
-  const [weight, setWeight] = useState(product.weight || '');
-  const [imageUrls, setImageUrls] = useState<string[]>(product.imageUrls || []);
-  const [inStock, setInStock] = useState(product.inStock ?? true);
-  const [featured, setFeatured] = useState(product.featured ?? false);
+  const [name, setName] = useState(product?.name || '');
+  const [nameHindi, setNameHindi] = useState(product?.nameHindi || '');
+  const [slug, setSlug] = useState(product?.slug || '');
+  const [category, setCategory] = useState(product?.category || '');
+  const [price, setPrice] = useState(product?.price ? product.price.toString() : '');
+  const [description, setDescription] = useState(product?.description || '');
+  const [descriptionHindi, setDescriptionHindi] = useState(product?.descriptionHindi || '');
+  const [origin, setOrigin] = useState(product?.origin || '');
+  const [chakra, setChakra] = useState(product?.chakra || '');
+  const [healingProps, setHealingProps] = useState(product?.healingProps || '');
+  const [weight, setWeight] = useState(product?.weight || '');
+  const [imageUrls, setImageUrls] = useState<string[]>(product?.imageUrls || []);
+  const [inStock, setInStock] = useState(product?.inStock ?? true);
+  const [featured, setFeatured] = useState(product?.featured ?? false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -56,8 +56,11 @@ export default function ProductEditForm({ product }: { product: Product }) {
     };
 
     try {
-      const res = await fetch(`/api/products/${product.slug}`, {
-        method: 'PUT',
+      const url = isNew ? '/api/products' : `/api/products/${product?.slug}`;
+      const method = isNew ? 'POST' : 'PUT';
+
+      const res = await fetch(url, {
+        method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
@@ -79,18 +82,20 @@ export default function ProductEditForm({ product }: { product: Product }) {
     }
   };
 
-  const updatedAt = new Intl.DateTimeFormat('en-IN', { 
+  const updatedAt = product?.updatedAt ? new Intl.DateTimeFormat('en-IN', { 
     day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-  }).format(new Date(product.updatedAt));
+  }).format(new Date(product.updatedAt)) : null;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold text-[#F5F0E8]">Edit Product</h1>
-        <div className="flex items-center text-sm text-gray-400 bg-[#0D2137] border border-[#C9A84C]/20 px-3 py-1.5 rounded-full">
-          <Clock className="w-4 h-4 mr-2" />
-          Last updated: {updatedAt}
-        </div>
+        <h1 className="text-2xl font-semibold text-[#F5F0E8]">{isNew ? 'Add New Product' : 'Edit Product'}</h1>
+        {updatedAt && (
+          <div className="flex items-center text-sm text-gray-400 bg-[#0D2137] border border-[#C9A84C]/20 px-3 py-1.5 rounded-full">
+            <Clock className="w-4 h-4 mr-2" />
+            Last updated: {updatedAt}
+          </div>
+        )}
       </div>
       
       {error && (
@@ -317,10 +322,10 @@ export default function ProductEditForm({ product }: { product: Product }) {
             {isSubmitting ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                Updating...
+                {isNew ? 'Saving...' : 'Updating...'}
               </>
             ) : (
-              'Update Product'
+              isNew ? 'Create Product' : 'Update Product'
             )}
           </button>
         </div>
