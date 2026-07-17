@@ -80,9 +80,8 @@ export default function CartPage() {
   const hasOutOfStock = validatedItems.some(i => !i.inStock);
   const subtotal = validatedItems
     .filter(i => i.inStock)
-    .reduce((sum, item) => sum + item.currentPrice * item.quantity, 0);
-  const shipping = subtotal >= 999 ? 0 : 99;
-  const total = subtotal + shipping;
+    .reduce((sum, item) => sum + Number(item.currentPrice || 0) * Number(item.quantity || 1), 0);
+  const total = subtotal;
 
   const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -226,13 +225,8 @@ export default function CartPage() {
                   </div>
                   <div className="flex justify-between text-[#F5F0E8]/70">
                     <span>{t("cart.shipping", "Shipping")}</span>
-                    <span className={shipping === 0 ? "text-green-400" : ""}>{shipping === 0 ? 'Free' : `₹${shipping}`}</span>
+                    <span className="text-[#C9A84C]">Calculated later</span>
                   </div>
-                  {shipping > 0 && (
-                    <div className="text-xs text-[#C9A84C]/80 text-right">
-                      {t("cart.shippingNote", "Free shipping on orders above ₹999")}
-                    </div>
-                  )}
                   <div className="h-px w-full bg-[#C9A84C]/20 my-4" />
                   <div className="flex justify-between text-[#F5F0E8] font-bold text-lg">
                     <span>{t("cart.total", "Total")}</span>
@@ -262,7 +256,7 @@ export default function CartPage() {
           </div>
           <h2 className="font-playfair text-3xl font-bold text-[#F5F0E8]">Login Recommended</h2>
           <p className="text-[#F5F0E8]/70">
-            Create an account or login to track your orders, save your delivery addresses, and checkout faster next time!
+            Create an account or login to track your orders effortlessly without needing a tracking ID, save your delivery addresses, and checkout faster next time!
           </p>
           
           <div className="space-y-4 pt-4">

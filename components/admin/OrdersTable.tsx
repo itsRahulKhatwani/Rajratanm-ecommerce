@@ -22,6 +22,7 @@ export default function OrdersTable({ orders }: { orders: FullOrder[] }) {
     return {
       all: orders.length,
       pending: orders.filter(o => o.status === 'pending').length,
+      confirmed: orders.filter(o => o.status === 'confirmed').length,
       shipped: orders.filter(o => o.status === 'shipped').length,
       delivered: orders.filter(o => o.status === 'delivered').length,
     };
@@ -41,6 +42,12 @@ export default function OrdersTable({ orders }: { orders: FullOrder[] }) {
           className={`px-3 py-1.5 rounded-full text-xs font-medium border ${filter === 'pending' ? 'border-[#C9A84C] text-[#C9A84C] bg-[#C9A84C]/10' : 'border-[#C9A84C]/20 text-gray-400 hover:text-gray-200 bg-[#0D2137]'}`}
         >
           Pending: {counts.pending}
+        </button>
+        <button 
+          onClick={() => setFilter('confirmed')}
+          className={`px-3 py-1.5 rounded-full text-xs font-medium border ${filter === 'confirmed' ? 'border-[#C9A84C] text-[#C9A84C] bg-[#C9A84C]/10' : 'border-[#C9A84C]/20 text-gray-400 hover:text-gray-200 bg-[#0D2137]'}`}
+        >
+          Confirmed: {counts.confirmed}
         </button>
         <button 
           onClick={() => setFilter('shipped')}

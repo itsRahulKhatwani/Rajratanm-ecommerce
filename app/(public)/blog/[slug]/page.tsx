@@ -7,11 +7,12 @@ import BlogContentClient from '@/components/ui/BlogContentClient';
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   let blog = null;
   try {
+    const resolvedParams = await params;
     blog = await prisma.blog.findFirst({
-      where: { slug: params.slug, published: true },
+      where: { slug: resolvedParams.slug, published: true },
       select: { title: true, excerpt: true, coverImage: true }
     });
   } catch (error) {
@@ -26,13 +27,14 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   let blog = null;
   let relatedBlogs: any[] = [];
 
   try {
+    const resolvedParams = await params;
     blog = await prisma.blog.findFirst({
-      where: { slug: params.slug, published: true }
+      where: { slug: resolvedParams.slug, published: true }
     });
     
     if (blog) {

@@ -11,7 +11,6 @@ export default function BlogEditForm({ blog, isNew = false }: { blog?: Partial<B
   const router = useRouter();
   const [title, setTitle] = useState(blog?.title || '');
   const [titleHindi, setTitleHindi] = useState(blog?.titleHindi || '');
-  const [slug, setSlug] = useState(blog?.slug || '');
   const [excerpt, setExcerpt] = useState(blog?.excerpt || '');
   const [excerptHindi, setExcerptHindi] = useState(blog?.excerptHindi || '');
   const [content, setContent] = useState(blog?.content || '');
@@ -33,10 +32,15 @@ export default function BlogEditForm({ blog, isNew = false }: { blog?: Partial<B
     setIsSubmitting(true);
     setError(null);
 
+    let finalSlug = blog?.slug;
+    if (isNew) {
+      finalSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+
     const payload = {
       title,
       titleHindi,
-      slug,
+      slug: finalSlug,
       excerpt,
       excerptHindi,
       content,
@@ -196,19 +200,8 @@ export default function BlogEditForm({ blog, isNew = false }: { blog?: Partial<B
               <h2 className="text-lg font-medium text-[#C9A84C] border-b border-[#C9A84C]/20 pb-2">
                 Blog Settings
               </h2>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-300">URL Slug</label>
-                <input
-                  type="text"
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
-                  className="w-full bg-[#1A2E44] border border-[#C9A84C]/30 rounded p-2.5 text-[#F5F0E8] focus:outline-none focus:border-[#C9A84C]"
-                />
-                <p className="text-xs text-yellow-500/80 mt-1">Warning: Changing the slug will break existing links to this post.</p>
-              </div>
 
-              <div className="space-y-3 pt-4 border-t border-[#C9A84C]/20">
+              <div className="space-y-3 pt-4">
                 <div className="flex items-center justify-between">
                   <span className={`font-medium ${!published ? 'text-gray-300' : 'text-gray-500'}`}>Save as Draft</span>
                   <div 

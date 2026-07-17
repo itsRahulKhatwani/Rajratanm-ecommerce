@@ -6,11 +6,12 @@ import ProductCard from '@/components/ui/ProductCard';
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   let product = null;
   try {
+    const resolvedParams = await params;
     product = await prisma.product.findUnique({
-      where: { slug: params.slug },
+      where: { slug: resolvedParams.slug },
       select: { name: true, description: true, imageUrls: true }
     });
   } catch (error) {
@@ -30,13 +31,14 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function ProductPage({ params }: { params: { slug: string } }) {
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   let product = null;
   let relatedProducts: any[] = [];
 
   try {
+    const resolvedParams = await params;
     product = await prisma.product.findUnique({
-      where: { slug: params.slug }
+      where: { slug: resolvedParams.slug }
     });
 
     if (product) {
