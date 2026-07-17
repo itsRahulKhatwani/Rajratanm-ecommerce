@@ -11,7 +11,6 @@ export default function ProductEditForm({ product, isNew = false }: { product?: 
   const router = useRouter();
   const [name, setName] = useState(product?.name || '');
   const [nameHindi, setNameHindi] = useState(product?.nameHindi || '');
-  const [slug, setSlug] = useState(product?.slug || '');
   const [category, setCategory] = useState(product?.category || '');
   const [price, setPrice] = useState(product?.price ? product.price.toString() : '');
   const [description, setDescription] = useState(product?.description || '');
@@ -38,10 +37,15 @@ export default function ProductEditForm({ product, isNew = false }: { product?: 
     setIsSubmitting(true);
     setError(null);
 
+    let finalSlug = product?.slug;
+    if (isNew) {
+      finalSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+
     const payload = {
       name,
       nameHindi,
-      slug: slug.trim() || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+      slug: finalSlug,
       category,
       price: parseFloat(price),
       description,
@@ -201,17 +205,6 @@ export default function ProductEditForm({ product, isNew = false }: { product?: 
                 placeholder="0.00"
                 required
               />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300">URL Slug</label>
-              <input
-                type="text"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                className="w-full bg-[#1A2E44] border border-[#C9A84C]/30 rounded p-2.5 text-[#F5F0E8] focus:outline-none focus:border-[#C9A84C]"
-              />
-              <p className="text-xs text-yellow-500/80 mt-1">Warning: Changing the slug will break existing links to this product.</p>
             </div>
           </div>
 
