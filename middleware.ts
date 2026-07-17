@@ -38,8 +38,8 @@ export async function middleware(request: NextRequest) {
   )
 
   const { data: { user } } = await supabase.auth.getUser()
-  const adminEmail = process.env.ADMIN_EMAIL
-
+  const adminEmail = process.env.ADMIN_EMAIL?.trim()
+  
   // Handle /admin routes
   if (pathname.startsWith('/admin')) {
     

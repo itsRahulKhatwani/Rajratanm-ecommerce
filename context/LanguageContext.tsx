@@ -22,7 +22,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.admin": "Admin",
 
     // Hero
-    "hero.title": "Stones That Carry Stories",
+    "hero.title": "Gems That Carry Stories",
     "hero.subtitle": "Discover our curated collection of premium gemstones, healing crystals, and spiritual jewelry — ethically sourced, expertly authenticated.",
     "hero.cta": "Explore the Collection",
 
@@ -54,7 +54,7 @@ const translations: Record<Language, Record<string, string>> = {
     "blog.title": "Journal",
     "blog.desc": "Insights on healing, crystals, and spiritual growth.",
     "blog.readMore": "Read More",
-    "blog.empty": "Our writers are crafting stories of stone and spirit. Stay tuned.",
+    "blog.empty": "Our writers are crafting stories of gem and spirit. Stay tuned.",
     "blog.publishedOn": "Published on",
     "blog.share": "Share this article",
     "blog.relatedPosts": "Related Posts",
@@ -107,7 +107,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Trust badges
     "trust.authentic": "100% Authentic",
-    "trust.authenticDesc": "Every stone certified and verified",
+    "trust.authenticDesc": "Every gem certified and verified",
     "trust.ethical": "Ethically Sourced",
     "trust.ethicalDesc": "Responsibly mined, fairly traded",
     "trust.guidance": "Expert Guidance",
@@ -147,7 +147,7 @@ const translations: Record<Language, Record<string, string>> = {
     "nav.admin": "एडमिन",
 
     // Hero
-    "hero.title": "पत्थर जो कहानियाँ सुनाते हैं",
+    "hero.title": "रत्न जो कहानियाँ सुनाते हैं",
     "hero.subtitle": "प्रीमियम रत्नों, हीलिंग क्रिस्टल और आध्यात्मिक आभूषणों का हमारा चुना हुआ संग्रह खोजें — नैतिक रूप से प्राप्त, विशेषज्ञ प्रमाणित।",
     "hero.cta": "संग्रह देखें",
 
@@ -179,7 +179,7 @@ const translations: Record<Language, Record<string, string>> = {
     "blog.title": "जर्नल",
     "blog.desc": "हीलिंग, क्रिस्टल और आध्यात्मिक विकास पर अंतर्दृष्टि।",
     "blog.readMore": "और पढ़ें",
-    "blog.empty": "हमारे लेखक पत्थर और आत्मा की कहानियाँ गढ़ रहे हैं। बने रहें।",
+    "blog.empty": "हमारे लेखक रत्न और आत्मा की कहानियाँ गढ़ रहे हैं। बने रहें।",
     "blog.publishedOn": "प्रकाशित",
     "blog.share": "यह लेख साझा करें",
     "blog.relatedPosts": "संबंधित लेख",
@@ -232,7 +232,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Trust badges
     "trust.authentic": "100% प्रामाणिक",
-    "trust.authenticDesc": "हर पत्थर प्रमाणित और सत्यापित",
+    "trust.authenticDesc": "हर रत्न प्रमाणित और सत्यापित",
     "trust.ethical": "नैतिक रूप से प्राप्त",
     "trust.ethicalDesc": "ज़िम्मेदारी से खनन, निष्पक्ष व्यापार",
     "trust.guidance": "विशेषज्ञ मार्गदर्शन",

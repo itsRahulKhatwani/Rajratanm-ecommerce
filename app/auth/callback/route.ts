@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error && data.user) {
-      const adminEmail = process.env.ADMIN_EMAIL
+      const adminEmail = process.env.ADMIN_EMAIL?.trim()
       
       // If this is the admin email, redirect to admin dashboard
       if (data.user.email === adminEmail) {

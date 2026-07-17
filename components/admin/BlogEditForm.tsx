@@ -7,17 +7,17 @@ import { XCircle, Loader2, Clock } from 'lucide-react';
 import RichTextEditor from '@/components/ui/RichTextEditor';
 import ImageUploader from '@/components/ui/ImageUploader';
 
-export default function BlogEditForm({ blog }: { blog: Blog }) {
+export default function BlogEditForm({ blog, isNew = false }: { blog?: Partial<Blog>, isNew?: boolean }) {
   const router = useRouter();
-  const [title, setTitle] = useState(blog.title || '');
-  const [titleHindi, setTitleHindi] = useState(blog.titleHindi || '');
-  const [slug, setSlug] = useState(blog.slug || '');
-  const [excerpt, setExcerpt] = useState(blog.excerpt || '');
-  const [excerptHindi, setExcerptHindi] = useState(blog.excerptHindi || '');
-  const [content, setContent] = useState(blog.content || '');
-  const [contentHindi, setContentHindi] = useState(blog.contentHindi || '');
-  const [coverImage, setCoverImage] = useState(blog.coverImage || '');
-  const [published, setPublished] = useState(blog.published ?? false);
+  const [title, setTitle] = useState(blog?.title || '');
+  const [titleHindi, setTitleHindi] = useState(blog?.titleHindi || '');
+  const [slug, setSlug] = useState(blog?.slug || '');
+  const [excerpt, setExcerpt] = useState(blog?.excerpt || '');
+  const [excerptHindi, setExcerptHindi] = useState(blog?.excerptHindi || '');
+  const [content, setContent] = useState(blog?.content || '');
+  const [contentHindi, setContentHindi] = useState(blog?.contentHindi || '');
+  const [coverImage, setCoverImage] = useState(blog?.coverImage || '');
+  const [published, setPublished] = useState(blog?.published ?? false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -46,8 +46,11 @@ export default function BlogEditForm({ blog }: { blog: Blog }) {
     };
 
     try {
-      const res = await fetch(`/api/blogs/${blog.slug}`, {
-        method: 'PUT',
+      const url = isNew ? '/api/blogs' : `/api/blogs/${blog?.slug}`;
+      const method = isNew ? 'POST' : 'PUT';
+
+      const res = await fetch(url, {
+        method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
@@ -69,18 +72,20 @@ export default function BlogEditForm({ blog }: { blog: Blog }) {
     }
   };
 
-  const updatedAt = new Intl.DateTimeFormat('en-IN', { 
+  const updatedAt = blog?.updatedAt ? new Intl.DateTimeFormat('en-IN', { 
     day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-  }).format(new Date(blog.updatedAt));
+  }).format(new Date(blog.updatedAt)) : null;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold text-[#F5F0E8]">Edit Blog Post</h1>
-        <div className="flex items-center text-sm text-gray-400 bg-[#0D2137] border border-[#C9A84C]/20 px-3 py-1.5 rounded-full">
-          <Clock className="w-4 h-4 mr-2" />
-          Last updated: {updatedAt}
-        </div>
+        <h1 className="text-2xl font-semibold text-[#F5F0E8]">{isNew ? 'Create Blog Post' : 'Edit Blog Post'}</h1>
+        {updatedAt && (
+          <div className="flex items-center text-sm text-gray-400 bg-[#0D2137] border border-[#C9A84C]/20 px-3 py-1.5 rounded-full">
+            <Clock className="w-4 h-4 mr-2" />
+            Last updated: {updatedAt}
+          </div>
+        )}
       </div>
       
       {error && (
@@ -260,10 +265,10 @@ export default function BlogEditForm({ blog }: { blog: Blog }) {
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                  Updating...
+                  {isNew ? 'Saving...' : 'Updating...'}
                 </>
               ) : (
-                'Update Post'
+                isNew ? 'Create Post' : 'Update Post'
               )}
             </button>
           </div>
