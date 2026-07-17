@@ -1,7 +1,6 @@
 import HeroSection from "@/components/sections/HeroSection";
 import FeaturedProducts from "@/components/sections/FeaturedProducts";
 import FeaturedBlogs from "@/components/sections/FeaturedBlogs";
-import WhyRajRatanm from "@/components/sections/WhyRajRatanm";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import { prisma } from "@/lib/prisma";
 
@@ -40,7 +39,6 @@ export default async function HomePage() {
     <>
       <HeroSection />
       <FeaturedProducts products={featuredProducts as any} />
-      <WhyRajRatanm />
       <FeaturedBlogs blogs={featuredBlogs as any} />
       <TestimonialsSection testimonials={[]} />
     </>
