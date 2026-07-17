@@ -219,7 +219,7 @@ export default function BlogEditForm({ blog, isNew = false }: { blog?: Partial<B
                   </div>
                   <span className={`font-medium ${published ? 'text-[#C9A84C]' : 'text-gray-500'}`}>Publish Now</span>
                 </div>
-                {published && blog.publishedAt && (
+                {published && blog?.publishedAt && (
                   <p className="text-xs text-gray-400 mt-2 text-right">
                     Published on: {new Intl.DateTimeFormat('en-IN', {
                       day: '2-digit', month: 'short', year: 'numeric'

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ShoppingBag, X, CheckCircle, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { getCart, updateQuantity, removeFromCart, clearCart } from '@/lib/cart';
+import { createBrowserClient } from '@/lib/supabase-client';
 
 interface ValidatedItem {
   productId: string;
@@ -21,8 +22,9 @@ export default function CartPage() {
   const { t } = useLanguage();
   const [validatedItems, setValidatedItems] = useState<ValidatedItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [checkoutStep, setCheckoutStep] = useState<'cart' | 'details' | 'confirm'>('cart');
+  const [checkoutStep, setCheckoutStep] = useState<'cart' | 'auth-prompt' | 'details' | 'confirm'>('cart');
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -62,6 +64,15 @@ export default function CartPage() {
 
   useEffect(() => {
     fetchValidatedCart();
+    
+    // Check Auth Status
+    const checkAuth = async () => {
+      const supabase = createBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsAuthenticated(!!user);
+    };
+    checkAuth();
+
     window.addEventListener('cart-updated', fetchValidatedCart);
     return () => window.removeEventListener('cart-updated', fetchValidatedCart);
   }, []);
@@ -230,7 +241,7 @@ export default function CartPage() {
                 </div>
 
                 <button
-                  onClick={() => setCheckoutStep('details')}
+                  onClick={() => isAuthenticated ? setCheckoutStep('details') : setCheckoutStep('auth-prompt')}
                   disabled={hasOutOfStock || validatedItems.length === 0}
                   className="w-full bg-[#C9A84C] text-[#0D1B2A] font-bold py-3 rounded-lg hover:bg-[#D4B96A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -238,6 +249,42 @@ export default function CartPage() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {checkoutStep === 'auth-prompt' && (
+        <div className="max-w-md mx-auto space-y-8 animate-fade-in py-12 text-center">
+          <div className="w-16 h-16 bg-[#C9A84C]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8 text-[#C9A84C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+          </div>
+          <h2 className="font-playfair text-3xl font-bold text-[#F5F0E8]">Login Recommended</h2>
+          <p className="text-[#F5F0E8]/70">
+            Create an account or login to track your orders, save your delivery addresses, and checkout faster next time!
+          </p>
+          
+          <div className="space-y-4 pt-4">
+            <Link 
+              href="/login?redirect=/cart"
+              className="block w-full bg-[#C9A84C] text-[#0D1B2A] font-bold py-4 rounded-lg hover:bg-[#D4B96A] transition-colors"
+            >
+              Login / Sign Up
+            </Link>
+            
+            <button
+              onClick={() => setCheckoutStep('details')}
+              className="block w-full bg-[#0D1B2A] border border-[#C9A84C]/50 text-[#C9A84C] font-bold py-4 rounded-lg hover:bg-[#C9A84C]/10 transition-colors"
+            >
+              Checkout as Guest
+            </button>
+            <button 
+              onClick={() => setCheckoutStep('cart')}
+              className="text-sm text-[#F5F0E8]/50 hover:text-[#F5F0E8] mt-4"
+            >
+              ← Back to Cart
+            </button>
           </div>
         </div>
       )}
@@ -346,29 +393,6 @@ export default function CartPage() {
               </div>
             </div>
 
-            <div className="bg-[#0D1B2A] p-6 rounded-xl border border-[#C9A84C]/20 space-y-4">
-              <h2 className="text-xl font-medium text-[#F5F0E8]">Payment Method</h2>
-              
-              <label className="flex items-start space-x-4 p-4 border border-[#C9A84C] rounded-lg cursor-pointer bg-[#C9A84C]/5">
-                <input type="radio" checked readOnly className="mt-1 w-4 h-4 accent-[#C9A84C]" />
-                <div>
-                  <div className="font-medium text-[#F5F0E8]">Cash on Delivery</div>
-                  <div className="text-sm text-[#F5F0E8]/50">Pay when your order arrives</div>
-                </div>
-              </label>
-              
-              <label className="flex items-start space-x-4 p-4 border border-[#C9A84C]/20 rounded-lg opacity-50 cursor-not-allowed">
-                <input type="radio" disabled className="mt-1 w-4 h-4" />
-                <div className="flex-grow">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-[#F5F0E8]">Pay Online</span>
-                    <span className="text-[10px] bg-[#C9A84C] text-[#0D1B2A] px-2 py-0.5 rounded font-bold uppercase">Coming Soon</span>
-                  </div>
-                  <div className="text-sm text-[#F5F0E8]/50">UPI, Cards, Net Banking — available soon</div>
-                </div>
-              </label>
-            </div>
-
             <button
               type="submit"
               disabled={isSubmitting}
@@ -391,7 +415,7 @@ export default function CartPage() {
           </div>
           <h1 className="font-playfair text-4xl font-bold text-[#C9A84C]">Order Placed Successfully!</h1>
           <p className="text-[#F5F0E8]/70 text-lg">
-            Thank you for your order. We will contact you within 24 hours to confirm your order and delivery details.
+            Thank you for your order. We will contact you on WhatsApp within 24 hours to arrange payment and confirm your delivery details.
           </p>
           
           <div className="bg-[#0D1B2A] p-6 rounded-xl border border-[#C9A84C]/20 text-left space-y-2 inline-block w-full max-w-sm">

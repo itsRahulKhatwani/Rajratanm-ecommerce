@@ -41,7 +41,7 @@ export default function ProductEditForm({ product, isNew = false }: { product?: 
     const payload = {
       name,
       nameHindi,
-      slug,
+      slug: slug.trim() || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
       category,
       price: parseFloat(price),
       description,
