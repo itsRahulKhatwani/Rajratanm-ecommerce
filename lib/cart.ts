@@ -3,7 +3,7 @@ type CartItem = { productId: string; quantity: number }
 export const getCart = (): CartItem[] => {
   if (typeof window === 'undefined') return []
   try {
-    return JSON.parse(localStorage.getItem('raj-ratanm-cart') || '[]')
+    return JSON.parse(localStorage.getItem('raj-ratnam-cart') || '[]')
   } catch { return [] }
 }
 
@@ -15,13 +15,13 @@ export const addToCart = (productId: string, quantity: number = 1): void => {
   } else {
     cart.push({ productId, quantity })
   }
-  localStorage.setItem('raj-ratanm-cart', JSON.stringify(cart))
+  localStorage.setItem('raj-ratnam-cart', JSON.stringify(cart))
   window.dispatchEvent(new Event('cart-updated'))
 }
 
 export const removeFromCart = (productId: string): void => {
   const cart = getCart().filter(i => i.productId !== productId)
-  localStorage.setItem('raj-ratanm-cart', JSON.stringify(cart))
+  localStorage.setItem('raj-ratnam-cart', JSON.stringify(cart))
   window.dispatchEvent(new Event('cart-updated'))
 }
 
@@ -30,12 +30,12 @@ export const updateQuantity = (productId: string, quantity: number): void => {
   const cart = getCart().map(i => 
     i.productId === productId ? { ...i, quantity } : i
   )
-  localStorage.setItem('raj-ratanm-cart', JSON.stringify(cart))
+  localStorage.setItem('raj-ratnam-cart', JSON.stringify(cart))
   window.dispatchEvent(new Event('cart-updated'))
 }
 
 export const clearCart = (): void => {
-  localStorage.removeItem('raj-ratanm-cart')
+  localStorage.removeItem('raj-ratnam-cart')
   window.dispatchEvent(new Event('cart-updated'))
 }
 
