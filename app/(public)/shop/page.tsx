@@ -1,7 +1,20 @@
+import type { Metadata } from 'next';
 import { prisma } from "@/lib/prisma";
 import ShopGrid from "@/components/ui/ShopGrid";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: 'Shop Gemstones & Crystals',
+  description: 'Browse our complete collection of precious stones, ' +
+    'semi-precious gemstones, healing crystals and artificial ' +
+    'jewelry. Authentic, ethically sourced, shipped across India.',
+  openGraph: {
+    title: 'Shop — Raj Ratnam Gemstone Collection',
+    description: 'Precious stones, healing crystals and jewelry ' +
+      'handpicked from India\'s finest mines.'
+  }
+};
 
 export default async function ShopPage() {
   let products: any[] = [];

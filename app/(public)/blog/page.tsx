@@ -1,9 +1,21 @@
+import type { Metadata } from 'next';
 import { prisma } from "@/lib/prisma";
 import BlogCard from "@/components/ui/BlogCard";
 import BlogHeader from "@/components/ui/BlogHeader";
 import { BookOpen } from "lucide-react";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: 'Gemstone Journal & Blog',
+  description: 'Learn about precious stones, healing crystals, ' +
+    'chakras, and gemstone wisdom. Articles in Hindi and English.',
+  openGraph: {
+    title: 'Raj Ratnam Journal — Gemstone Wisdom & Stories',
+    description: 'Articles on precious stones, healing crystals ' +
+      'and gemstone wisdom in Hindi and English.'
+  }
+};
 
 export default async function BlogPage() {
   let blogs: any[] = [];

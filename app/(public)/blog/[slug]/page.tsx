@@ -13,17 +13,39 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const resolvedParams = await params;
     blog = await prisma.blog.findFirst({
       where: { slug: resolvedParams.slug, published: true },
-      select: { title: true, excerpt: true, coverImage: true }
+      select: {
+        title: true,
+        excerpt: true,
+        coverImage: true,
+        publishedAt: true
+      }
     });
   } catch (error) {
     console.warn("Database connection failed for generateMetadata");
   }
   if (!blog) return {};
-  
+
   return {
-    title: `${blog.title} | Raj Ratnam Blog`,
+    title: blog.title,
     description: blog.excerpt,
-    openGraph: { images: [blog.coverImage || ''] }
+    openGraph: {
+      title: `${blog.title} | Raj Ratnam`,
+      description: blog.excerpt,
+      type: 'article',
+      publishedTime: blog.publishedAt?.toISOString(),
+      images: blog.coverImage ? [{
+        url: blog.coverImage,
+        width: 1200,
+        height: 630,
+        alt: blog.title
+      }] : []
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: blog.title,
+      description: blog.excerpt,
+      images: blog.coverImage ? [blog.coverImage] : []
+    }
   };
 }
 

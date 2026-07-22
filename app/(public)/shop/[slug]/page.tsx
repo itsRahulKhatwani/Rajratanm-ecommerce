@@ -12,21 +12,44 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const resolvedParams = await params;
     product = await prisma.product.findUnique({
       where: { slug: resolvedParams.slug },
-      select: { name: true, description: true, imageUrls: true }
+      select: {
+        name: true,
+        description: true,
+        imageUrls: true,
+        price: true,
+        category: true,
+        origin: true
+      }
     });
   } catch (error) {
     console.warn("Database connection failed for generateMetadata");
   }
   if (!product) return {};
-  
-  // Strip HTML tags for description
-  const plainDesc = product.description.replace(/<[^>]+>/g, '').slice(0, 160);
-  
+
+  // Strip HTML tags from description for meta
+  const plainDescription = product.description
+    .replace(/<[^>]*>/g, '')
+    .slice(0, 160);
+
   return {
-    title: `${product.name} | Raj Ratnam`,
-    description: plainDesc,
+    title: `${product.name} — Buy Online`,
+    description: `${plainDescription}. Price: ₹${product.price.toLocaleString('en-IN')}. Authentic ${product.category} stone from ${product.origin || 'India'}.`,
     openGraph: {
-      images: [product.imageUrls[0] || '']
+      title: `${product.name} | Raj Ratnam`,
+      description: plainDescription,
+      images: product.imageUrls[0] ? [{
+        url: product.imageUrls[0],
+        width: 800,
+        height: 600,
+        alt: product.name
+      }] : [],
+      type: 'website'
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.name,
+      description: plainDescription,
+      images: product.imageUrls[0] ? [product.imageUrls[0]] : []
     }
   };
 }
