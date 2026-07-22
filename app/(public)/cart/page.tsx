@@ -429,7 +429,7 @@ export default function CartPage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
             <a
-              href={`https://wa.me/91XXXXXXXXXX?text=${encodeURIComponent(`Hi, I just placed an order on Raj Ratanm. Order ID: ${orderId}. Please confirm.`)}`}
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919828016063"}?text=${encodeURIComponent(`Hi, I just placed an order on Raj Ratnam. Order ID: ${orderId}. Please confirm.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-[#25D366] text-white font-bold py-3 px-8 rounded-lg hover:bg-[#1EBE5A] transition-colors"

@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const plainDesc = product.description.replace(/<[^>]+>/g, '').slice(0, 160);
   
   return {
-    title: `${product.name} | Raj Ratanm`,
+    title: `${product.name} | Raj Ratnam`,
     description: plainDesc,
     openGraph: {
       images: [product.imageUrls[0] || '']

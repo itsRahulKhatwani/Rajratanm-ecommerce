@@ -10,12 +10,12 @@ cloudinary.config({
 /**
  * Upload an image to Cloudinary (signed upload — server-side only).
  * @param file - base64 data URI or a remote URL string
- * @param folder - Cloudinary folder path (defaults to rajratanm/products)
+ * @param folder - Cloudinary folder path (defaults to rajratnam/products)
  * @returns The secure_url of the uploaded image
  */
 export async function uploadToCloudinary(
   file: string,
-  folder: string = "rajratanm/products"
+  folder: string = "rajratnam/products"
 ): Promise<string> {
   try {
     const result = await cloudinary.uploader.upload(file, {

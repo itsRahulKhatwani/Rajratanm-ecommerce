@@ -38,7 +38,8 @@ export async function middleware(request: NextRequest) {
   )
 
   const { data: { user } } = await supabase.auth.getUser()
-  const adminEmail = process.env.ADMIN_EMAIL?.trim()
+  const adminEmails = (process.env.ADMIN_EMAIL || '').split(',').map(e => e.trim().toLowerCase())
+  const isUserAdmin = Boolean(user?.email && adminEmails.includes(user.email.trim().toLowerCase()))
   
   // Handle /admin routes
   if (pathname.startsWith('/admin')) {
@@ -46,7 +47,7 @@ export async function middleware(request: NextRequest) {
     // Allow /admin/login page through always
     if (pathname === '/admin/login') {
       // If already logged in as admin, redirect to dashboard
-      if (user && user.email === adminEmail) {
+      if (user && isUserAdmin) {
         return NextResponse.redirect(new URL('/admin', request.url))
       }
       // Not logged in or not admin — show login page
@@ -61,7 +62,7 @@ export async function middleware(request: NextRequest) {
 
     // Logged in but NOT the admin email
     // This prevents customers from accessing admin
-    if (user.email !== adminEmail) {
+    if (!isUserAdmin) {
       return NextResponse.redirect(new URL('/', request.url))
     }
 

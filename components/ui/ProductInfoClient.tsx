@@ -37,8 +37,7 @@ export default function ProductInfoClient({ product }: ProductInfoProps) {
   const displayCategory = product.category.charAt(0).toUpperCase() + product.category.slice(1);
   const formattedPrice = "₹" + product.price.toLocaleString('en-IN');
   
-  // TODO: Replace with real WhatsApp number
-  const waNumber = "91XXXXXXXXXX";
+  const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919828016063";
   const waMessage = encodeURIComponent(`Hi, I'm interested in ${product.name}`);
   const waUrl = `https://wa.me/${waNumber}?text=${waMessage}`;
 

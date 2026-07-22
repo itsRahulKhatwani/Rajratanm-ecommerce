@@ -33,13 +33,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const folder = body.folder ?? "rajratanm/products";
+    const folder = body.folder ?? "rajratnam/products";
     const secureUrl = await uploadToCloudinary(body.image, folder);
 
     // Extract publicId from the URL
     // Cloudinary URL format: https://res.cloudinary.com/<cloud>/image/upload/v<ver>/<folder/public_id>.<ext>
     const urlParts = secureUrl.split("/upload/");
-    const afterUpload = urlParts[1]; // e.g. "v1234567890/rajratanm/products/abc123.webp"
+    const afterUpload = urlParts[1]; // e.g. "v1234567890/rajratnam/products/abc123.webp"
     // Strip version segment if present
     const publicIdWithExt = afterUpload.replace(/^v\d+\//, "");
     const publicId = publicIdWithExt.replace(/\.[^/.]+$/, ""); // remove extension

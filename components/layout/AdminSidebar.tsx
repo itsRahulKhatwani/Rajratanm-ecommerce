@@ -52,7 +52,7 @@ export default function AdminSidebar() {
             className="text-xl font-bold text-[#C9A84C] block"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Raj Ratanm
+            Raj Ratnam
           </span>
           <span className="text-xs text-[#F5F0E8]/40 mt-0.5 block">
             Admin Panel

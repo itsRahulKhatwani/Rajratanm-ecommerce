@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/admin/", "/api/"],
     },
-    sitemap: "https://rajratanm.com/sitemap.xml",
+    sitemap: "https://rajratnam.com/sitemap.xml",
   };
 }

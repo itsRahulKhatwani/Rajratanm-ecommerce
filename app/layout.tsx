@@ -16,8 +16,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Raj Ratanm — Premium Gemstones & Healing Crystals",
-    template: "%s | Raj Ratanm",
+    default: "Raj Ratnam — Premium Gemstones & Healing Crystals",
+    template: "%s | Raj Ratnam",
   },
   description:
     "Discover authentic precious stones, semi-precious gemstones, artificial jewelry, and healing crystals. Ethically sourced, expert curated. Where ancient wisdom meets modern elegance.",
@@ -29,13 +29,13 @@ export const metadata: Metadata = {
     "Indian jewelry",
     "spiritual healing",
     "chakra stones",
-    "Raj Ratanm",
+    "Raj Ratnam",
   ],
   openGraph: {
     type: "website",
     locale: "en_IN",
-    siteName: "Raj Ratanm",
-    title: "Raj Ratanm — Premium Gemstones & Healing Crystals",
+    siteName: "Raj Ratnam",
+    title: "Raj Ratnam — Premium Gemstones & Healing Crystals",
     description:
       "Discover authentic precious stones, semi-precious gemstones, artificial jewelry, and healing crystals.",
   },

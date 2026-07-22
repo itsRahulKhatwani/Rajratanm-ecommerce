@@ -12,10 +12,11 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error && data.user) {
-      const adminEmail = process.env.ADMIN_EMAIL?.trim()
+      const adminEmails = (process.env.ADMIN_EMAIL || '').split(',').map(e => e.trim().toLowerCase())
+      const isUserAdmin = Boolean(data.user.email && adminEmails.includes(data.user.email.trim().toLowerCase()))
       
-      // If this is the admin email, redirect to admin dashboard
-      if (data.user.email === adminEmail) {
+      // If this is an admin email, redirect to admin dashboard
+      if (isUserAdmin) {
         return NextResponse.redirect(new URL('/admin', origin))
       }
       

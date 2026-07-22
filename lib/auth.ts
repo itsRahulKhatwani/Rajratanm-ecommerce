@@ -12,10 +12,18 @@ export async function getAuthenticatedUser(): Promise<User | null> {
   }
 }
 
+export function isAdminEmail(email?: string | null): boolean {
+  if (!email) return false
+  const adminEmails = (process.env.ADMIN_EMAIL || '')
+    .split(',')
+    .map(e => e.trim().toLowerCase())
+  return adminEmails.includes(email.trim().toLowerCase())
+}
+
 export async function getAdminUser(): Promise<User | null> {
   const user = await getAuthenticatedUser()
   if (!user) return null
-  if (user.email !== process.env.ADMIN_EMAIL) return null
+  if (!isAdminEmail(user.email)) return null
   return user
 }
 

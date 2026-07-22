@@ -3,7 +3,7 @@
 import { useLanguage } from "@/lib/LanguageContext";
 import TrustBadge from "@/components/ui/TrustBadge";
 
-export default function WhyRajRatanm() {
+export default function WhyRajRatnam() {
   const { t } = useLanguage();
 
   const badges = [

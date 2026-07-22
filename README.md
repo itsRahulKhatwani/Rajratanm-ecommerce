@@ -1,7 +1,7 @@
-# Raj Ratanm — Premium E-Commerce & Blog Platform
+# Raj Ratnam — Premium E-Commerce & Blog Platform
 
 ## 1. Project Overview
-Raj Ratanm is a production-grade, bilingual (English & Hindi) e-commerce and blog website built for a premium Indian brand selling precious stones, semi-precious gemstones, artificial jewelry, and healing crystals.
+Raj Ratnam is a production-grade, bilingual (English & Hindi) e-commerce and blog website built for a premium Indian brand selling precious stones, semi-precious gemstones, artificial jewelry, and healing crystals.
 
 The platform provides a mystical, luxurious, and trustworthy experience with a rich dark navy and gold aesthetic, while giving the owner complete control over content through a protected admin dashboard.
 
@@ -21,7 +21,7 @@ The platform provides a mystical, luxurious, and trustworthy experience with a r
 1. **Clone and Install Dependencies:**
    ```bash
    git clone <repository_url>
-   cd rajratanm
+   cd rajratnam
    npm install
    ```
 
@@ -63,7 +63,7 @@ The platform provides a mystical, luxurious, and trustworthy experience with a r
 1. Go to [Cloudinary](https://cloudinary.com/) and create a free account.
 2. Find your Cloud Name, API Key, and API Secret on the dashboard. Add them to `.env`.
 3. Go to **Settings -> Upload** and add an "Upload preset".
-4. Set the preset name (e.g. `rajratanm_signed`) and set Signing Mode to **Signed**.
+4. Set the preset name (e.g. `rajratnam_signed`) and set Signing Mode to **Signed**.
 5. Add this preset name to `.env` as `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET`.
 
 ## 7. How to Deploy to Vercel

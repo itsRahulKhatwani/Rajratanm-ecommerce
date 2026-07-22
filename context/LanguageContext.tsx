@@ -60,7 +60,7 @@ const translations: Record<Language, Record<string, string>> = {
     "blog.relatedPosts": "Related Posts",
 
     // About
-    "about.title": "About Raj Ratanm",
+    "about.title": "About Raj Ratnam",
     "about.story.title": "Our Story",
     "about.values.title": "Our Values",
     "about.authenticity": "Authenticity",
@@ -120,8 +120,8 @@ const translations: Record<Language, Record<string, string>> = {
     "testimonials.empty": "Customer stories coming soon.",
 
     // Why section
-    "why.title": "Why Raj Ratanm?",
-    "why.desc": "Every piece in our collection carries the earth's ancient energy, handpicked with care and authenticated with expertise.",
+    "why.title": "Why Raj Ratnam?",
+    "why.desc": "Every piece in our collection carries the ancient energy of the Earth, hand-selected with care and certified with expertise.",
 
     // Footer
     "footer.tagline": "Where ancient wisdom meets modern elegance",
@@ -129,7 +129,7 @@ const translations: Record<Language, Record<string, string>> = {
     "footer.support": "Support",
     "footer.followUs": "Follow Us",
     "footer.whatsapp": "Chat with us",
-    "footer.copyright": "© 2024 Raj Ratanm. All rights reserved.",
+    "footer.copyright": "© 2025 Raj Ratnam. All rights reserved.",
 
     // Common
     "common.loading": "Loading...",
@@ -185,7 +185,7 @@ const translations: Record<Language, Record<string, string>> = {
     "blog.relatedPosts": "संबंधित लेख",
 
     // About
-    "about.title": "राज रतनम के बारे में",
+    "about.title": "राज रत्नम् के बारे में",
     "about.story.title": "हमारी कहानी",
     "about.values.title": "हमारे मूल्य",
     "about.authenticity": "प्रामाणिकता",
@@ -245,7 +245,7 @@ const translations: Record<Language, Record<string, string>> = {
     "testimonials.empty": "ग्राहक कहानियाँ जल्द आ रही हैं।",
 
     // Why section
-    "why.title": "क्यों राज रतनम?",
+    "why.title": "क्यों राज रत्नम्?",
     "why.desc": "हमारे संग्रह का हर टुकड़ा पृथ्वी की प्राचीन ऊर्जा वहन करता है, देखभाल से चुना गया और विशेषज्ञता से प्रमाणित।",
 
     // Footer
@@ -254,7 +254,7 @@ const translations: Record<Language, Record<string, string>> = {
     "footer.support": "सहायता",
     "footer.followUs": "हमें फॉलो करें",
     "footer.whatsapp": "हमसे बात करें",
-    "footer.copyright": "© 2024 राज रतनम। सर्वाधिकार सुरक्षित।",
+    "footer.copyright": "© 2025 राज रत्नम्। सर्वाधिकार सुरक्षित।",
 
     // Common
     "common.loading": "लोड हो रहा है...",
@@ -269,7 +269,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<Language>("en");
 
   useEffect(() => {
-    const saved = localStorage.getItem("raj-ratanm-language") as Language | null;
+    const saved = localStorage.getItem("raj-ratnam-language") as Language | null;
     if (saved === "en" || saved === "hi") {
       setLanguage(saved);
     }
@@ -278,7 +278,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const toggleLanguage = useCallback(() => {
     setLanguage((prev) => {
       const next = prev === "en" ? "hi" : "en";
-      localStorage.setItem("raj-ratanm-language", next);
+      localStorage.setItem("raj-ratnam-language", next);
       return next;
     });
   }, []);

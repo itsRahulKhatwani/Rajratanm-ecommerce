@@ -14,7 +14,7 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <Link href="/" className="inline-block mb-4">
               <span className="font-playfair text-2xl font-bold text-gold">
-                Raj Ratanm
+                Raj Ratnam
               </span>
             </Link>
             <p className="text-ivory/50 text-sm leading-relaxed mb-6">
@@ -22,7 +22,7 @@ export default function Footer() {
             </p>
             {/* WhatsApp */}
             <a
-              href="https://wa.me/91XXXXXXXXXX"
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919828016063"}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-emerald/20 text-emerald-light text-sm font-medium hover:bg-emerald/30 transition-colors duration-300"

@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!blog) return {};
   
   return {
-    title: `${blog.title} | Raj Ratanm Blog`,
+    title: `${blog.title} | Raj Ratnam Blog`,
     description: blog.excerpt,
     openGraph: { images: [blog.coverImage || ''] }
   };
@@ -70,7 +70,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     "datePublished": blog.publishedAt,
     "publisher": {
       "@type": "Organization",
-      "name": "Raj Ratanm"
+      "name": "Raj Ratnam"
     }
   };
 

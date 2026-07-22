@@ -59,7 +59,7 @@ export default function CustomerLoginPage() {
         <div className="text-center mb-8">
           <Gem className="mx-auto mb-3 text-[#C9A84C]" size={36} />
           <h1 className="font-playfair text-3xl text-[#C9A84C]">
-            Raj Ratanm
+            Raj Ratnam
           </h1>
           <p className="text-[#F5F0E8]/60 mt-1">
             Sign in to track your orders

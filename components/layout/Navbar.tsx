@@ -51,7 +51,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <span className="font-playfair text-2xl md:text-3xl font-bold text-[#C9A84C] tracking-tight">
-              Raj Ratanm
+              Raj Ratnam
             </span>
           </Link>
 

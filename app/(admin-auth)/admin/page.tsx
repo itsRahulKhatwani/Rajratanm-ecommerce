@@ -2,15 +2,15 @@ import { createServerClient } from '@/lib/supabase'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
+import { isAdminEmail } from '@/lib/auth'
+
 export const dynamic = 'force-dynamic'
 
 export default async function AdminDashboardPage() {
   const supabase = await createServerClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const adminEmail = process.env.ADMIN_EMAIL?.trim()
-
-  if (!user || user.email !== adminEmail) {
+  if (!user || !isAdminEmail(user.email)) {
     redirect('/admin/login')
   }
 

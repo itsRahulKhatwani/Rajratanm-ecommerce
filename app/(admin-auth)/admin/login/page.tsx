@@ -53,7 +53,7 @@ export default function AdminLoginPage() {
         <div className="text-center mb-8">
           <LockKeyhole className="mx-auto mb-4 text-[#C9A84C]" size={40} />
           <h1 className="font-playfair text-3xl text-[#C9A84C] mb-1">
-            Raj Ratanm
+            Raj Ratnam
           </h1>
           <p className="text-[#F5F0E8]/60 text-sm">Admin Portal</p>
         </div>

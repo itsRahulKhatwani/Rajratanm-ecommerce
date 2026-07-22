@@ -27,7 +27,7 @@ export default function AboutPage() {
           <h2 className="font-playfair text-3xl text-gold mb-8">{t("about.story.title")}</h2>
           <div className="space-y-6 text-ivory/70 leading-relaxed text-lg">
             <p>
-              Raj Ratanm was born from a deep reverence for the earth&apos;s treasures. 
+              Raj Ratnam was born from a deep reverence for the earth&apos;s treasures. 
               In the heart of India, where ancient traditions of gemstone knowledge have 
               been passed down through generations, we began our journey to bring the 
               world&apos;s most authentic and powerful stones to those who seek them.
@@ -39,7 +39,7 @@ export default function AboutPage() {
               profound healing properties that different stones carry within them.
             </p>
             <p>
-              Today, Raj Ratanm stands as a bridge between ancient wisdom and modern 
+              Today, Raj Ratnam stands as a bridge between ancient wisdom and modern 
               living. Every piece in our collection is hand-selected, ethically sourced, 
               and accompanied by detailed information about its origins, properties, and 
               spiritual significance. We believe that the right stone, at the right time, 
