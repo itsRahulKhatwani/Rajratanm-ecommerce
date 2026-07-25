@@ -5,6 +5,8 @@ import Link from 'next/link'
 import StatusBadge from '@/components/ui/StatusBadge'
 import CustomerSignOut from '@/components/ui/CustomerSignOut'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AccountPage() {
   const supabase = await createServerClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -13,23 +15,29 @@ export default async function AccountPage() {
   if (!user) redirect('/login?redirect=/account')
 
   // Fetch this customer's orders by their email
-  const orders = await prisma.order.findMany({
-    where: { customerEmail: user.email! },
-    include: {
-      items: {
-        include: {
-          product: {
-            select: {
-              name: true,
-              slug: true,
-              imageUrls: true
+  let orders: any[] = []
+  
+  try {
+    orders = await prisma.order.findMany({
+      where: { customerEmail: user.email! },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                name: true,
+                slug: true,
+                imageUrls: true
+              }
             }
           }
         }
-      }
-    },
-    orderBy: { createdAt: 'desc' }
-  })
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+  } catch (error) {
+    console.warn("Database connection failed for AccountPage orders")
+  }
 
   return (
     <div className="min-h-screen bg-[#0D1B2A] py-12 px-4">
@@ -68,7 +76,7 @@ export default async function AccountPage() {
             </div>
           ) : (
             <div className="space-y-6">
-              {orders.map(order => (
+              {orders.map((order: any) => (
                 <div
                   key={order.id}
                   className="bg-[#0D2137] rounded-xl border 
@@ -110,7 +118,7 @@ export default async function AccountPage() {
 
                   {/* Order items */}
                   <div className="p-5 space-y-3">
-                    {order.items.map(item => (
+                    {order.items.map((item: any) => (
                       <div key={item.id}
                            className="flex items-center gap-4">
                         {/* Product image */}
