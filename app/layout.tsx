@@ -18,6 +18,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || 'https://rajratnam.com'
   ),
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png'
+  },
   title: {
     default: 'Raj Ratnam — Precious Stones & Healing Crystals',
     template: '%s | Raj Ratnam'
