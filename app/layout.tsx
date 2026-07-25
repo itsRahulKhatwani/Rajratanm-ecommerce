@@ -14,14 +14,11 @@ const inter = Inter({
   display: 'swap',
 })
 
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+                'https://rajratnam.com'
+
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || 'https://rajratnam.com'
-  ),
-  icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png'
-  },
+  metadataBase: new URL(baseUrl),
   title: {
     default: 'Raj Ratnam — Precious Stones & Healing Crystals',
     template: '%s | Raj Ratnam'
@@ -47,10 +44,10 @@ export const metadata: Metadata = {
   authors: [{ name: 'Raj Ratnam' }],
   creator: 'Raj Ratnam',
   publisher: 'Raj Ratnam',
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico'
   },
   openGraph: {
     type: 'website',
@@ -60,18 +57,24 @@ export const metadata: Metadata = {
     title: 'Raj Ratnam — Precious Stones & Healing Crystals',
     description: 'Ethically sourced precious stones, healing ' +
       'crystals, and jewelry from India\'s finest mines.',
-    images: [{
-      url: '/og-image.jpg',
-      width: 1200,
-      height: 630,
-      alt: 'Raj Ratnam — Precious Stones & Healing Crystals'
-    }]
+    url: baseUrl,
+    images: [
+      {
+        url: `${baseUrl}/og-image.jpg`,
+        secureUrl: `${baseUrl}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: 'Raj Ratnam — Precious Stones & Healing Crystals',
+        type: 'image/jpeg'
+      }
+    ]
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Raj Ratnam — Precious Stones & Healing Crystals',
     description: 'Ethically sourced precious stones and healing ' +
-      'crystals from India.'
+      'crystals from India.',
+    images: [`${baseUrl}/og-image.jpg`]
   },
   robots: {
     index: true,
