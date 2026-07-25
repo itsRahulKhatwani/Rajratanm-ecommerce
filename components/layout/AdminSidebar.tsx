@@ -11,6 +11,7 @@ import {
   BookOpen,
   PenLine,
   ShoppingBag,
+  MessageSquare,
   LogOut,
   Loader2,
 } from "lucide-react";
@@ -22,6 +23,7 @@ const navItems = [
   { href: "/admin/blogs", label: "Blog Posts", icon: BookOpen },
   { href: "/admin/blogs/new", label: "Write Blog", icon: PenLine },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { href: "/admin/messages", label: "Messages", icon: MessageSquare },
 ];
 
 export default function AdminSidebar() {
