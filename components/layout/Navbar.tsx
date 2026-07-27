@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCartCount } from "@/lib/cart";
 import { createBrowserClient } from "@/lib/supabase-client";
@@ -12,6 +12,18 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [user, setUser] = useState<User | null>(null);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(event.target as Node)) {
+        setAccountMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     setCartCount(getCartCount());
@@ -98,7 +110,7 @@ export default function Navbar() {
             </Link>
 
             {/* Account / Sign In */}
-            <div className="relative">
+            <div className="relative" ref={accountMenuRef}>
               {user ? (
                 <Link
                   href="/account"
@@ -112,6 +124,7 @@ export default function Navbar() {
               ) : (
                 <div className="relative group">
                   <button
+                    onClick={() => setAccountMenuOpen(!accountMenuOpen)}
                     className="p-2 text-[#F5F0E8]/70 hover:text-[#C9A84C] transition-colors duration-300 inline-block"
                     aria-label="Account"
                   >
@@ -120,16 +133,18 @@ export default function Navbar() {
                     </svg>
                   </button>
                   
-                  <div className="absolute right-0 top-full pt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className={`absolute right-0 top-full pt-2 w-48 transition-all duration-200 z-50 ${accountMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible md:group-hover:opacity-100 md:group-hover:visible'}`}>
                     <div className="bg-[#0D2137] border border-[#C9A84C]/20 rounded-lg shadow-xl py-2">
                       <Link 
                         href="/login" 
+                        onClick={() => setAccountMenuOpen(false)}
                         className="block px-4 py-2 text-sm text-[#F5F0E8]/70 hover:text-[#C9A84C] hover:bg-[#C9A84C]/10 transition-colors"
                       >
                         Customer Login
                       </Link>
                       <Link 
                         href="/admin/login" 
+                        onClick={() => setAccountMenuOpen(false)}
                         className="block px-4 py-2 text-sm text-[#F5F0E8]/70 hover:text-[#C9A84C] hover:bg-[#C9A84C]/10 transition-colors"
                       >
                         Admin Portal
@@ -173,6 +188,35 @@ export default function Navbar() {
                   {t(link.label)}
                 </Link>
               ))}
+              
+              <div className="my-2 border-t border-[#C9A84C]/10"></div>
+              
+              {user ? (
+                <Link
+                  href="/account"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-4 py-3 text-[#F5F0E8]/70 hover:text-[#C9A84C] hover:bg-[#C9A84C]/5 rounded-lg transition-all duration-300 text-sm font-medium tracking-wide"
+                >
+                  Account
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-4 py-3 text-[#F5F0E8]/70 hover:text-[#C9A84C] hover:bg-[#C9A84C]/5 rounded-lg transition-all duration-300 text-sm font-medium tracking-wide"
+                  >
+                    Customer Login
+                  </Link>
+                  <Link
+                    href="/admin/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-4 py-3 text-[#F5F0E8]/70 hover:text-[#C9A84C] hover:bg-[#C9A84C]/5 rounded-lg transition-all duration-300 text-sm font-medium tracking-wide"
+                  >
+                    Admin Portal
+                  </Link>
+                </>
+              )}
             </nav>
           </div>
         )}
