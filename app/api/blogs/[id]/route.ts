@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createServerClient } from "@/lib/supabase";
+import { getAdminUser } from "@/lib/auth";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 // GET /api/blogs/[id] — looks up by SLUG
 // Public can only see published=true blogs.
-// Drafts return 404 for unauthenticated callers (don't reveal drafts exist).
+// Drafts return 404 for non-admin callers (don't reveal drafts exist).
 export async function GET(request: Request, { params }: RouteContext) {
   try {
     const { id: slug } = await params;
@@ -18,10 +18,7 @@ export async function GET(request: Request, { params }: RouteContext) {
 
     if (!blog.published) {
       // Check if the caller is an authenticated admin
-      const supabase = await createServerClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getAdminUser();
       if (!user) {
         // Return 404 — don't reveal the draft exists
         return NextResponse.json({ error: "Blog not found" }, { status: 404 });
@@ -35,13 +32,10 @@ export async function GET(request: Request, { params }: RouteContext) {
   }
 }
 
-// PUT /api/blogs/[id] — Protected, partial update by slug
+// PUT /api/blogs/[id] — Protected (admin only), partial update by slug
 export async function PUT(request: Request, { params }: RouteContext) {
   try {
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getAdminUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -94,13 +88,10 @@ export async function PUT(request: Request, { params }: RouteContext) {
   }
 }
 
-// DELETE /api/blogs/[id] — Protected
+// DELETE /api/blogs/[id] — Protected (admin only)
 export async function DELETE(_request: Request, { params }: RouteContext) {
   try {
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getAdminUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

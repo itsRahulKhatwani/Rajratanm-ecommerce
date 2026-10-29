@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createServerClient } from "@/lib/supabase";
+import { getAdminUser } from "@/lib/auth";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -20,13 +20,10 @@ export async function GET(_request: Request, { params }: RouteContext) {
   }
 }
 
-// PUT /api/products/[id] — Protected, partial update by slug
+// PUT /api/products/[id] — Protected (admin only), partial update by slug
 export async function PUT(request: Request, { params }: RouteContext) {
   try {
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getAdminUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -83,13 +80,10 @@ export async function PUT(request: Request, { params }: RouteContext) {
   }
 }
 
-// DELETE /api/products/[id] — Protected
+// DELETE /api/products/[id] — Protected (admin only)
 export async function DELETE(_request: Request, { params }: RouteContext) {
   try {
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getAdminUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

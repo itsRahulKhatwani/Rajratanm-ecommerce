@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase";
+import { getAdminUser } from "@/lib/auth";
 import { uploadToCloudinary, deleteFromCloudinary } from "@/lib/cloudinary";
 
 // 10 MB expressed as base64 character count
@@ -9,10 +9,7 @@ const MAX_BASE64_CHARS = 10 * 1024 * 1024 * (4 / 3);
 // POST /api/image-upload — Protected (admin only)
 export async function POST(request: Request) {
   try {
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getAdminUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -54,10 +51,7 @@ export async function POST(request: Request) {
 // DELETE /api/image-upload — Protected (admin only)
 export async function DELETE(request: Request) {
   try {
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getAdminUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

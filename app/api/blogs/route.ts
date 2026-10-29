@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createServerClient } from "@/lib/supabase";
+import { getAdminUser } from "@/lib/auth";
 
 // GET /api/blogs
-// Default: published only. ?all=true (admin): all including drafts — requires auth.
+// Default: published only. ?all=true (admin): all including drafts — requires admin auth.
 // Supports ?search= to filter by title.
 export async function GET(request: Request) {
   try {
@@ -12,11 +12,8 @@ export async function GET(request: Request) {
     const search = searchParams.get("search");
 
     if (all) {
-      // Admin usage — require auth
-      const supabase = await createServerClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      // Admin usage — require admin auth
+      const user = await getAdminUser();
       if (!user) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
@@ -41,13 +38,10 @@ export async function GET(request: Request) {
   }
 }
 
-// POST /api/blogs — Protected
+// POST /api/blogs — Protected (admin only)
 export async function POST(request: Request) {
   try {
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getAdminUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

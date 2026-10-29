@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createServerClient } from "@/lib/supabase";
+import { getAdminUser } from "@/lib/auth";
 
 // GET /api/orders — Admin only
 // Supports ?status= filter
 export async function GET(request: Request) {
   try {
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await getAdminUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -74,33 +71,45 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validate each item
+    // Validate each item (valid productId and positive integer quantity)
     for (const item of body.items) {
-      if (!item.productId || !item.quantity || item.quantity < 1) {
+      if (
+        !item.productId ||
+        !item.quantity ||
+        item.quantity < 1 ||
+        !Number.isInteger(item.quantity)
+      ) {
         return NextResponse.json(
           {
             error:
-              "Each item must have a valid productId and quantity of at least 1",
+              "Each item must have a valid productId and an integer quantity of at least 1",
           },
           { status: 400 }
         );
       }
     }
 
-    // Fetch current prices from DB — never trust client-side prices
+    // Fetch current prices and stock status from DB — never trust client-side data
     const productIds = body.items.map((i) => i.productId);
     const products = await prisma.product.findMany({
       where: { id: { in: productIds } },
-      select: { id: true, price: true },
+      select: { id: true, name: true, price: true, inStock: true },
     });
 
-    const priceMap = new Map(products.map((p) => [p.id, p.price]));
+    const productMap = new Map(products.map((p) => [p.id, p]));
 
-    // Verify all products exist
+    // Verify all products exist and are in stock
     for (const item of body.items) {
-      if (!priceMap.has(item.productId)) {
+      const product = productMap.get(item.productId);
+      if (!product) {
         return NextResponse.json(
           { error: `Product not found: ${item.productId}` },
+          { status: 400 }
+        );
+      }
+      if (!product.inStock) {
+        return NextResponse.json(
+          { error: `Product "${product.name}" is currently out of stock.` },
           { status: 400 }
         );
       }
@@ -108,20 +117,20 @@ export async function POST(request: Request) {
 
     // Calculate total server-side
     const totalAmount = body.items.reduce((sum, item) => {
-      return sum + priceMap.get(item.productId)! * item.quantity;
+      return sum + productMap.get(item.productId)!.price * item.quantity;
     }, 0);
 
     // Create Order + OrderItems in a single transaction
     const order = await prisma.$transaction(async (tx) => {
       return tx.order.create({
         data: {
-          customerName: body.customerName!,
-          customerEmail: body.customerEmail!,
-          customerPhone: body.customerPhone!,
-          address: body.address!,
-          city: body.city!,
-          state: body.state!,
-          pincode: body.pincode!,
+          customerName: body.customerName!.trim(),
+          customerEmail: body.customerEmail!.trim().toLowerCase(),
+          customerPhone: body.customerPhone!.trim(),
+          address: body.address!.trim(),
+          city: body.city!.trim(),
+          state: body.state!.trim(),
+          pincode: body.pincode!.trim(),
           totalAmount,
           status: "pending",
           razorpayOrderId: null,
@@ -129,7 +138,7 @@ export async function POST(request: Request) {
             create: body.items!.map((item) => ({
               productId: item.productId,
               quantity: item.quantity,
-              price: priceMap.get(item.productId)!,
+              price: productMap.get(item.productId)!.price,
             })),
           },
         },

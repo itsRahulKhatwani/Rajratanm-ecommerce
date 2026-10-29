@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { createServerClient } from "@/lib/supabase";
+import { getAdminUser } from "@/lib/auth";
 
 // GET /api/products
 // Public — supports ?category=, ?featured=true, ?search=
@@ -27,14 +27,11 @@ export async function GET(request: Request) {
   }
 }
 
-// POST /api/products — Protected
+// POST /api/products — Protected (admin only)
 export async function POST(request: Request) {
   try {
-    // Auth check
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // Admin auth check
+    const user = await getAdminUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

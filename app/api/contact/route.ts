@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getAdminUser } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
@@ -27,6 +28,11 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
+    const user = await getAdminUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const messages = await prisma.contact.findMany({
       orderBy: { createdAt: 'desc' },
     });
