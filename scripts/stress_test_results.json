@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-10-29T14:02:58.678Z",
+  "scenarios": {
+    "catalog": {
+      "rps": 81.87,
+      "totalRequests": 1228,
+      "p50": 211,
+      "p95": 1514,
+      "p99": 2631,
+      "errors": 0
+    },
+    "search": {
+      "rps": 131.14,
+      "totalRequests": 1967,
+      "p50": 187,
+      "p95": 245,
+      "p99": 352,
+      "errors": 0
+    },
+    "homepage": {
+      "rps": 95.94,
+      "totalRequests": 1439,
+      "p50": 373,
+      "p95": 744,
+      "p99": 1847,
+      "errors": 0
+    },
+    "orders": {
+      "rps": 46.9,
+      "totalRequests": 469,
+      "p50": 204,
+      "p95": 265,
+      "p99": 567,
+      "errors": 0
+    }
+  }
+}
